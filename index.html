@@ -19,9 +19,9 @@
         .marquee-container {
             position: relative;
             width: 300px;
-            height: 200px;
+            height: 100px;
             overflow: hidden;
-            margin: 50px auto;
+            margin: 10px auto;
             border: 2px solid #000;
             background-color: #f8f8f8;
         }
@@ -49,7 +49,7 @@
 
         .pointer {
             position: absolute;
-            top: 0;
+            top: 8px;
             left: -30px;
             width: 30px;
             height: 40px;
@@ -116,9 +116,7 @@
 
     <button id="spin-button">抽籤</button>
 
-
     <script>
-        // 六十甲子的列表
         const sixtyJiazi = [
             "甲子", "乙丑", "丙寅", "丁卯", "戊辰", "己巳", "庚午", "辛未", "壬申", "癸酉",
             "甲戌", "乙亥", "丙子", "丁丑", "戊寅", "己卯", "庚辰", "辛巳", "壬午", "癸未",
@@ -128,149 +126,74 @@
             "甲寅", "乙卯", "丙辰", "丁巳", "戊午", "己未", "庚申", "辛酉", "壬戌", "癸亥"
         ];
 
-        const sixtyJiazi2 = [
-            "子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉",
-            "戌", "亥"
-        ];
+        const twelve = ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"];
 
-        const marquee = document.getElementById('marquee');
-        const spinButton = document.getElementById('spin-button');
-        const resultText = document.getElementById('result-text');
+        const itemHeight = 40;
 
-        const marquee2 = document.getElementById('marquee2');
-        const marquee3 = document.getElementById('marquee3');
-        const length = 100;
-        // 顯示六十甲子列表
-        function createMarquee() {
-
-            for (i = 0; i < length; i++) {
-                sixtyJiazi.forEach(jiazi => {
-                    const span = document.createElement('span');
-                    span.textContent = jiazi;
-                    marquee.appendChild(span);
-                });
-
-            }
-
-
-            for (i = 0; i < length * 5; i++) {
-                sixtyJiazi2.forEach(jiazi => {
-                    const span = document.createElement('span');
-                    span.textContent = jiazi;
-                    marquee2.appendChild(span);
-
-                });
-            }
-            for (i = 0; i < length * 5; i++) {
-                sixtyJiazi2.forEach(jiazi => {
-                    const span = document.createElement('span');
-                    span.textContent = jiazi;
-                    marquee3.appendChild(span);
-
+        function createList(wrapper, list, repeat = 50) {
+            for (let i = 0; i < repeat; i++) {
+                list.forEach(text => {
+                    const span = document.createElement("span");
+                    span.textContent = text;
+                    wrapper.appendChild(span);
                 });
             }
         }
 
+        const m1 = document.getElementById("marquee");
+        const m2 = document.getElementById("marquee2");
+        const m3 = document.getElementById("marquee3");
 
+        createList(m1, sixtyJiazi, 40);
+        createList(m2, twelve, 200);
+        createList(m3, twelve, 200);
 
-        createMarquee(); // 初始化跑馬燈
+        let spinning = false;
 
-        let currentPosition = 0;  // 當前滾動的位置
-        let speed;  // 初始滾動速度
-        let interval;  // 定時器ID
-        let interval2;
-        let interval3;
-        let stopPosition = 0;  // 用來記錄最終停下來的相對位置
-        let isSpinning = false;  // 防止重複點擊的標誌
+        function spin(wrapper, duration) {
+            let position = 0;
+            let speed = 60;
 
-        // 開始滾動跑馬燈
-        function startMarquee() {
-            clearInterval(interval);  // 清除之前的定時器
-            clearInterval(interval2);
-            clearInterval(interval3);
-            currentPosition = 0;  // 重置滾動位置
-            marquee.style.transform = `translateY(0px)`;  // 初始化跑馬燈位置
-            marquee2.style.transform = `translateY(0px)`;
-            marquee3.style.transform = `translateY(0px)`;
-
-
-            isSpinning = true;  // 標記為正在滾動
-            const r = getRandomDuration(1, 5) * 10;  // 隨機時間
-            const r2 = getRandomDuration(1, 5) * 10;  // 隨機時間
-            const r3 = getRandomDuration(1, 5) * 10;  // 隨機時間
-            interval = setInterval(() => {
-                currentPosition -= speed;  // 向上滾動
-                marquee.style.transform = `translateY(${currentPosition}px)`;  // 更新跑馬燈的位置
-            }, r);  // 
-
-            interval2 = setInterval(() => {
-                currentPosition -= speed;  // 向上滾動
-                marquee2.style.transform = `translateY(${currentPosition}px)`;  // 更新跑馬燈的位置
-            }, r2);  // 設定滾動速度
-
-            interval3 = setInterval(() => {
-                currentPosition -= speed;  // 向上滾動
-                marquee3.style.transform = `translateY(${currentPosition}px)`;  // 更新跑馬燈的位置
-            }, r3);  // 設定滾動速度
-
-
-
-        }
-
-        // 停止跑馬燈滾動
-        function stopMarquee() {
-            clearInterval(interval);  // 停止滾動
-            isSpinning = false;  // 標記為已停止
-        }
-        function stopMarquee2() {
-            clearInterval(interval2);  // 停止滾動
-        }
-        function stopMarquee3() {
-            clearInterval(interval3);  // 停止滾動
-        }
-
-
-        // 隨機生成滾動的時間
-        function getRandomDuration(min, max) {
-            return Math.random() * (max - min) + min;  // 返回隨機時間
-        }
-
-        // 當點擊「抽籤」按鈕時觸發
-        spinButton.addEventListener('click', () => {
-            if (isSpinning) return;  // 防止重複點擊
-
-            startMarquee();  // 開始滾動
-            speed = 60;  // 初始滾動速度
-
-            // 設定隨機滾動時間
-            const randomDuration = getRandomDuration(1, 5) * 1000;  // 隨機時間
-            const randomDuration2 = getRandomDuration(1, 5) * 1000;  // 隨機時間
-            const randomDuration3 = getRandomDuration(1, 5) * 1000;  // 隨機時間
-            // 在隨機時間後，開始減速並停止
-            setTimeout(() => {
-                speed = 10;  // 減慢滾動速度
-                setTimeout(() => {
-                    stopMarquee();  // 停止滾動
-                }, 3000);  // 延遲3秒顯示結果
-            }, randomDuration);  // 隨機延遲
+            const interval = setInterval(() => {
+                position -= speed;
+                wrapper.style.transform = `translateY(${position}px)`;
+            }, 20);
 
             setTimeout(() => {
-                speed = 10;  // 減慢滾動速度
-                setTimeout(() => {
-                    stopMarquee2();  // 停止滾動
-                }, 3000);  // 延遲3秒顯示結果
-            }, randomDuration2);  // 隨機延遲
+                speed = 15;
+            }, duration - 1500);
 
             setTimeout(() => {
-                speed = 10;  // 減慢滾動速度
+                clearInterval(interval);
+
+                // 對齊到最近 40px
+                position = Math.round(position / itemHeight) * itemHeight;
+
+                wrapper.style.transition = "transform 0.3s ease-out";
+                wrapper.style.transform = `translateY(${position}px)`;
+
                 setTimeout(() => {
-                    stopMarquee3();  // 停止滾動
-                }, 3000);  // 延遲3秒顯示結果
-            }, randomDuration3);  // 隨機延遲
+                    wrapper.style.transition = "none";
+                }, 300);
 
+            }, duration);
+        }
 
+        document.getElementById("spin-button").addEventListener("click", () => {
+            if (spinning) return;
+            spinning = true;
+
+            spin(m1, 3000 + Math.random() * 2000);
+            spin(m2, 3500 + Math.random() * 2000);
+            spin(m3, 4000 + Math.random() * 2000);
+
+            setTimeout(() => {
+                spinning = false;
+            }, 6000);
         });
     </script>
+
+
 </body>
 
 </html>
