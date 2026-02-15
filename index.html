@@ -183,13 +183,13 @@
             if (spinning) return;
             spinning = true;
 
-            spin(m1, 1500);
-            spin(m2, 1700);
-            spin(m3, 1900);
+            spin(m1, 500+ Math.random() * 1000);
+            spin(m2, 1000+ Math.random() * 1000);
+            spin(m3, 1500+ Math.random() * 1000);
 
             setTimeout(() => {
                 spinning = false;
-            }, 2000);
+            }, 2500);
         });
     </script>
 
