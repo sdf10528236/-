@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -150,47 +149,40 @@
 
         let spinning = false;
 
-        function spin(wrapper, duration) {
-            let position = 0;
-            let speed = 60;
+        function spin(wrapper, listLength) {
 
-            const interval = setInterval(() => {
-                position -= speed;
-                wrapper.style.transform = `translateY(${position}px)`;
-            }, 20);
+            const randomIndex = Math.floor(Math.random() * listLength);
 
+            const middleStart = Math.floor(wrapper.children.length / 2);
+
+            const finalIndex = middleStart + randomIndex;
+
+            const finalPosition = -(finalIndex * itemHeight);
+
+            // 亂轉一段
+            wrapper.style.transition = "transform 1.5s ease-in";
+            wrapper.style.transform = `translateY(${finalPosition - 600}px)`;
+
+            // 停下
             setTimeout(() => {
-                speed = 15;
-            }, duration - 1500);
-
-            setTimeout(() => {
-                clearInterval(interval);
-
-                // 對齊到最近 40px
-                position = Math.round(position / itemHeight) * itemHeight;
-
-                wrapper.style.transition = "transform 0.3s ease-out";
-                wrapper.style.transform = `translateY(${position}px)`;
-
-                setTimeout(() => {
-                    wrapper.style.transition = "none";
-                }, 300);
-
-            }, duration);
+                wrapper.style.transition = "transform 0.5s ease-out";
+                wrapper.style.transform = `translateY(${finalPosition}px)`;
+            }, 1500);
         }
 
         document.getElementById("spin-button").addEventListener("click", () => {
             if (spinning) return;
             spinning = true;
 
-            spin(m1, 500+ Math.random() * 1000);
-            spin(m2, 1000+ Math.random() * 1000);
-            spin(m3, 1500+ Math.random() * 1000);
+            spin(m1, 60);
+            spin(m2, 12);
+            spin(m3, 12);
 
             setTimeout(() => {
                 spinning = false;
             }, 2500);
         });
+
     </script>
 
 
